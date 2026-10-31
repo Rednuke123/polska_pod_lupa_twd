@@ -5,7 +5,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-retail <- read.csv("dane/raw/retail_raw.csv",
+retail <- read.csv("data/raw/retail_raw.csv",
                    sep = ";",
                    fileEncoding = "UTF-8")
 
