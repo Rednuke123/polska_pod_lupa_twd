@@ -28,7 +28,7 @@ cala_polska <-retail %>%
   summarise(Value = median(Value), .groups = "drop" )
   
 wynik <- cala_polska %>%
-  group_by(Activity.types, Months) %>%
+  group_by(Ativity.types, Months) %>%
   summarise(mediana = median(Value) - 100,
             min = min(Value) - 100,
             max = max(Value) - 100,
