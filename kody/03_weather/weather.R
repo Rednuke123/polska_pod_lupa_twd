@@ -93,7 +93,7 @@ ggplot(lata, aes(x = rok, y = proc)) +
     plot.caption  = element_text(colour = TEKST2, size = 10, hjust = 0),
     axis.text     = element_text(colour = TEKST2),
     axis.title    = element_text(colour = TEKST2),
-    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
     )
 
 ggsave("~/Desktop/wigilia_lata.png", width = 12, height = 6, dpi = 300, bg = BG)

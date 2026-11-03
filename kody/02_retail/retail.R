@@ -28,11 +28,11 @@ cala_polska <-retail %>%
   summarise(Value = median(Value), .groups = "drop" )
   
 wynik <- cala_polska %>%
-  group_by(Ativity.types, Months) %>%
+  group_by(Activity.types, Months) %>%
   summarise(mediana = median(Value) - 100,
             min = min(Value) - 100,
             max = max(Value) - 100,
-            .groups = "drop" )
+            .groups = "drop")
 wynik <- wynik %>%
   mutate(Months = factor(Months, levels = month.name))
 
@@ -44,7 +44,7 @@ wynik <- wynik %>%
                                  "solid, liquid and gaseous fuels"                     = "Paliwa"))
 
 
-ggplot(wynik, aes(x = Months, y = mediana, fill = Months == "December")) +
+p <- ggplot(wynik, aes(x = Months, y = mediana, fill = Months == "December")) +
   geom_col(width = 0.7) +
   facet_wrap(~ Activity.types, nrow = 1) +
   geom_linerange(aes(ymin = min, ymax = max), colour = "grey40", linewidth = 0.4)+
@@ -61,7 +61,8 @@ ggplot(wynik, aes(x = Months, y = mediana, fill = Months == "December")) +
           
   theme_minimal()
   
-
+ggsave("~/Desktop/wykres_zakupy.png", plot = p,
+       width = 30, height = 12, units = "cm", dpi = 300, bg = "white")
 
 
 podglad <- retail %>%
