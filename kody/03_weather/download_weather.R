@@ -24,7 +24,7 @@ for (f in foldery) {
     for (p in pliki) {
       dane <- read.csv(p, header = FALSE, fileEncoding = "CP1250")
       wynik[[length(wynik) + 1]] <- dane %>%
-        filter((V4 == 12 & V5 == 24) | (V4 == 1 & V5 == 1))%>%
+        filter((V4 == 12 & V5 == 25) | (V4 == 1 & V5 == 1))%>%
         select(kod = V1, stacja = V2, rok = V3,  miesiac = V4, temp = V10,
                snieg_cm = V17, snieg_status = V18) %>%
         # ujednolicamy typy kolumn (puste kolumny R czyta jako logiczne)
