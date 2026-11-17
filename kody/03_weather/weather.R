@@ -8,10 +8,11 @@ swieta <- read.csv("data/raw/swieta_snieg.csv", fileEncoding = "UTF-8")
 KARTA   <- "#F5EEE0"   # tło wykresu
 CZERWON <- "#A8323E"   # tytuł i podtytuł
 BORDO   <- "#7A1E2B"   # Wigilia (ten sam kolor co grudzień w wydatkach)
-LOW     <- "#A8BFA0"   # Nowy Rok
+LOW     <- "#A8BFA0"   # Pozostae dni
 CYNAMON <- "#5C4A3D"   # osie, kreski, linie dekad
 ESPRESSO<- "#2E1F17"   # przerywana linia, podpisy średnich
 SIATKA  <- "#E6DDCB"
+YELLOW <- "#d9a43b"    # Nowy Rok
 
 gory <- c(349190650,   # Kasprowy Wierch
           350150510,   # Śnieżka
@@ -67,11 +68,12 @@ ggplot() +
                aes(x = sezon, xend = sezon, y = Wigilia, yend = `Nowy Rok`),
                colour = CYNAMON, linewidth = 0.6)+
   geom_point(data = sezony,
-             aes(x = sezon, y = proc, colour = dzien), size = 3.5)+
-  scale_colour_manual(values = c("Wigilia" = BORDO, "Nowy Rok" = LOW),
-                      breaks = c("Wigilia", "Nowy Rok"),
-                      labels = c("Wigilia (24.12)", "Nowy Rok (01.01)"),
-                      name = NULL)+
+             aes(x = sezon, y = proc, fill = dzien),
+             shape = 21, size = 3.5, colour = "#2E1F17", stroke = 0.4) +
+  scale_fill_manual(values = c("Wigilia" = "#7A1E2B", "Nowy Rok" = "#D9A43B"),
+                    breaks = c("Wigilia", "Nowy Rok"),
+                    labels = c("Wigilia (pomiar rano 25.12)", "Nowy Rok (pomiar rano 1.01)"),
+                    name = NULL)+
   scale_x_continuous(breaks = 1996:2025, 
                      labels = sprintf("%02d", 1996:2025 %% 100),
                      expand = expansion(add = 0.2))+
@@ -82,7 +84,7 @@ ggplot() +
                  label = paste0("średnio ", round(srednia), "%")),
              fill = KARTA, colour = ESPRESSO, size = 4.5, label.size = 0, vjust = -0.3)+
   labs(title    = "Czy święta są jeszcze białe?",
-       subtitle = "Odsetek stacji IMGW z pokrywą śnieżną (min. 1 cm) rano w Wigilię i w Nowy Rok, sezony 1996/97–2025/26.\nKreska łączy oba dni tych samych świąt. Przerywana linia – średnia dla 10 lat.",
+       subtitle =  "Odsetek stacji IMGW z pokrywą śnieżną (min. 1 cm) w noc wigilijną i noworoczną \n(pomiar rano 25.12 i 1.01). Kreska łączy oba dni tych samych świąt. Przerywana linia – średnia dla 10 lat.",
        x = "Rok (Wigilia danego roku i Nowy Rok następnego)",
        y = "Stacje ze śniegiem, %")+
        #caption = "Bez stacji wysokogórskich (Kasprowy Wierch, Śnieżka, Hala Gąsienicowa).\nOd 2023 r. dane na 1 stycznia z ok. 44 stacji (wcześniej ok. 55).") +
