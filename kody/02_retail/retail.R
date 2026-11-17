@@ -5,6 +5,8 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
+KARTA <- "#FAF6EE"
+
 retail <- read.csv("data/raw/retail_raw.csv",
                    sep = ";",
                    fileEncoding = "UTF-8")
@@ -39,30 +41,50 @@ wynik <- wynik %>%
 wynik <- wynik %>%
   mutate(Activity.types = recode(Activity.types,
                                  "food, beverages and tobacco products"                = "Żywność i napoje",
-                                 "newspapers, books, other sale in specialized stores" = "Prezenty (książki, zabawki)",
+                                 "newspapers, books, other sale in specialized stores" = "Książki, prasa i prezenty",
                                  "furniture, radio, TV and household appliances"       = "Meble, RTV, AGD",
                                  "solid, liquid and gaseous fuels"                     = "Paliwa"))
+wynik <- wynik %>%
+  mutate(wyroznienie = ifelse(Months == "December", "Grudzień", "Pozostałe miesiące"))
 
+wynik <- wynik %>%
+  mutate(Activity.types = factor(Activity.types,
+                                 levels = c("Książki, prasa i prezenty", "Żywność i napoje", "Meble, RTV, AGD", "Paliwa")))
 
-p <- ggplot(wynik, aes(x = Months, y = mediana, fill = Months == "December")) +
+p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
   geom_col(width = 0.7) +
   facet_wrap(~ Activity.types, nrow = 1) +
-  geom_linerange(aes(ymin = min, ymax = max), colour = "grey40", linewidth = 0.4)+
+  geom_linerange(aes(ymin = min, ymax = max), colour = "#5C4A3D", linewidth = 0.4)+
   geom_hline(yintercept = 0, colour = "grey30") +
-  scale_fill_manual(values = c("FALSE" = "#C5D0C0", "TRUE" = "#7A1E2B"),
-                 guide = "none")+
+  scale_fill_manual(values = c("Grudzień" = "#7A1E2B", "Pozostałe miesiące" = "#C5D0C0"),
+                    breaks = c("Grudzień", "Pozostałe miesiące"),
+                    name = NULL) +
   scale_x_discrete(labels = c("I","II","III","IV","V","VI",
                                 "VII","VIII","IX","X","XI","XII")) +
-  labs(title    = "Na co Polacy wydają w grudniu?",
-         subtitle = "Zmiana sprzedaży względem poprzedniego miesiąca (mediana 2021–2025). Kreska – rozrzut między latami.",
+  labs(title    = "Na co wydajemy więcej przed świętami?",
+         subtitle = "Zmiana sprzedaży względem poprzedniego miesiąca (słupek – mediana). Kreska – od wartości minimalnej do maksymalnej w okresie 2021–2025.",
          x = "Miesiąc",
          y = "Zmiana sprzedaży, %",
-         caption = "Źródło: GUS, Bankw Danych Lokalnych")+
-          
-  theme_minimal()
+         )+
+    #caption = "Źródło: GUS, Bank Danych Lokalnych"      
+  theme_minimal()+
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    plot.background  = element_rect(fill = KARTA, colour = NA),
+    panel.background = element_rect(fill = KARTA, colour = NA),
+    plot.title    = element_text(colour = "#A8323E", face = "bold", size = 20),
+    plot.subtitle = element_text(colour = "#A8323E"),
+    legend.position = "top",
+    legend.justification = "left",
+    panel.grid.major.y = element_line(colour = "#E6DDCB"),  
+    axis.text  = element_text(colour = "#5C4A3D"),          
+    axis.title = element_text(colour = "#5C4A3D"),          
+    strip.text = element_text(colour = "#2E1F17")     
+    )
   
 ggsave("~/Desktop/wykres_zakupy.png", plot = p,
-       width = 30, height = 12, units = "cm", dpi = 300, bg = "white")
+       width = 30, height = 12, units = "cm", dpi = 300, bg = KARTA)
 
 
 podglad <- retail %>%
