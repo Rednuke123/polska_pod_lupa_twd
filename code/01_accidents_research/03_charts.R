@@ -1,21 +1,38 @@
 df <- load.csv("data/clean/accidents.csv")
 
 
-table <- df %>%
+df <- df %>%
   mutate(
-    day_of_the_year = format(date, "%m-%d"),
+    day = format(date, "%d"),
+    day_and_month = format(date, "%m-%d"),
     year = format(date, "%Y")
-  ) %>%
-  filter(format(date, "%m-%d") >= "12-22", year >= 2022)
+  )
 
+table <- df %>%
+  filter(day_and_month >= "12-22", year >= 2022)
+
+avg <- df %>%
+  group_by(year) %>%
+  summarise(mean_wanted_arrested = mean(wanted_arrested, na.rm = TRUE)) %>%
+  filter(year >= 2022)
+
+year_labels <- setNames(
+  paste0(avg$year, " (śr. ", round(avg$mean_wanted_arrested), ")"),
+  avg$year
+)
 
 ggplot(table, aes(
-  x = day_of_the_year,
-  y = drunk_drivers,
+  x = day,
+  y = wanted_arrested,
   group = year,
   color = year,
   fill = year
 )) +
   geom_area(alpha = 0.2, position = "identity") +
   geom_line(linewidth = 1) +
-  theme_minimal()
+  theme_minimal() +
+  labs(title="Zatrzymani w Wigilię") + 
+  xlab("Dzień w grudniu") + 
+  ylab("Ile zatrzymanych") +
+  scale_color_discrete(labels = year_labels) +
+  guides(fill = "none")
