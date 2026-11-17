@@ -84,8 +84,8 @@ ggplot() +
   labs(title    = "Czy święta są jeszcze białe?",
        subtitle = "Odsetek stacji IMGW z pokrywą śnieżną (min. 1 cm) rano w Wigilię i w Nowy Rok, sezony 1996/97–2025/26.\nKreska łączy oba dni tych samych świąt. Przerywana linia – średnia dla 10 lat.",
        x = "Rok (Wigilia danego roku i Nowy Rok następnego)",
-       y = "Stacje ze śniegiem, %",
-       caption = "Bez stacji wysokogórskich (Kasprowy Wierch, Śnieżka, Hala Gąsienicowa).\nOd 2023 r. dane na 1 stycznia z ok. 44 stacji (wcześniej ok. 55).") +
+       y = "Stacje ze śniegiem, %")+
+       #caption = "Bez stacji wysokogórskich (Kasprowy Wierch, Śnieżka, Hala Gąsienicowa).\nOd 2023 r. dane na 1 stycznia z ok. 44 stacji (wcześniej ok. 55).") +
   #"Źródło: IMGW-PIB, dane synoptyczne dobowe. 
   theme_minimal()+
   theme(

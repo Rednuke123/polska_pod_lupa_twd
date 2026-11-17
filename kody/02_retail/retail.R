@@ -5,7 +5,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-KARTA <- "#FAF6EE"
+KARTA <- "#F5EEE0"
 
 retail <- read.csv("data/raw/retail_raw.csv",
                    sep = ";",
