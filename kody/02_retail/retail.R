@@ -73,19 +73,22 @@ p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
     panel.grid.minor   = element_blank(),
     plot.background  = element_rect(fill = KARTA, colour = NA),
     panel.background = element_rect(fill = KARTA, colour = NA),
-    plot.title    = element_text(colour = "#A8323E", face = "bold", size = 20),
     plot.subtitle = element_text(colour = "#A8323E"),
     legend.position = "top",
     legend.justification = "left",
     panel.grid.major.y = element_line(colour = "#E6DDCB"),  
     axis.text  = element_text(colour = "#5C4A3D"),          
     axis.title = element_text(colour = "#5C4A3D"),          
-    strip.text = element_text(colour = "#2E1F17")     
+    strip.text = element_text(colour = "#2E1F17"),
+    plot.title = element_text(family = "Helvetica", face = "bold",
+                              size = 34.2, colour = "#A8323E",
+                              hjust = 0, lineheight = 0.9,
+                              margin = margin(b = 6, unit = "pt")),
+    plot.title.position = "plot",
     )
   
 ggsave("~/Desktop/wykres_zakupy.png", plot = p,
-       width = 30, height = 12, units = "cm", dpi = 300, bg = KARTA)
-
+       width = 44, height = 22, units = "cm", dpi = 300, bg = "transparent")
 
 podglad <- retail %>%
   pivot_wider(names_from = Year, values_from = Value)
