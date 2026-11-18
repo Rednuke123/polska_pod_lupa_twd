@@ -60,10 +60,10 @@ dekady <- sezony %>%
 # --- wykres ---
 ggplot() +
   geom_vline(xintercept = c(2005.5, 2015.5),
-             colour = CYNAMON, linewidth = 0.5) +
+             colour = "#B3A48D", linewidth = 0.4) + 
   geom_segment(data = dekady,
-                aes(x = od, xend = do, y = srednia, yend = srednia),
-                colour = ESPRESSO, linewidth = 0.8, linetype = "dashed") +
+               aes(x = od, xend = do, y = srednia, yend = srednia),
+               colour = "#B3A48D", linewidth = 1, linetype = "dashed") +
   geom_segment(data = gantele,
                aes(x = sezon, xend = sezon, y = Wigilia, yend = `Nowy Rok`),
                colour = CYNAMON, linewidth = 0.6)+
@@ -93,7 +93,11 @@ ggplot() +
   theme(
    plot.background  = element_rect(fill = KARTA, colour = NA),
     panel.background = element_rect(fill = KARTA, colour = NA),
-    plot.title    = element_text(colour = CZERWON, face = "bold", size = 20),
+    plot.title = element_text(family = "Helvetica", face = "bold",
+                             size = 34.2, colour = "#A8323E",
+                             hjust = 0, lineheight = 0.9,
+                             margin = margin(b = 6, unit = "pt")),
+    plot.title.position = "plot",
     plot.subtitle = element_text(colour = CZERWON),
     plot.caption  = element_text(colour = CYNAMON, hjust = 0),
     legend.position = "top",
