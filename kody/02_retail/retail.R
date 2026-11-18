@@ -60,7 +60,12 @@ p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
                     breaks = c("Grudzień", "Pozostałe miesiące"),
                     name = NULL) +
   scale_x_discrete(labels = c("I","II","III","IV","V","VI",
-                                "VII","VIII","IX","X","XI","XII")) +
+                                "VII","VIII","IX","X","XI","XII", "")) +
+  geom_vline(data = data.frame(Activity.types = c("Książki, prasa i prezenty",
+                                                  "Meble, RTV, AGD",
+                                                  "Paliwa")),
+             aes(xintercept = 13),
+             colour = "#B3A48D", linewidth = 0.4) +
   labs(title    = "Na co wydajemy więcej przed świętami?",
          subtitle = "Zmiana sprzedaży względem poprzedniego miesiąca (słupek – mediana). Kreska – od wartości minimalnej do maksymalnej w okresie 2021–2025.",
          x = "Miesiąc",
@@ -85,6 +90,7 @@ p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
                               hjust = 0, lineheight = 0.9,
                               margin = margin(b = 6, unit = "pt")),
     plot.title.position = "plot",
+    
     )
   
 ggsave("~/Desktop/wykres_zakupy.png", plot = p,
