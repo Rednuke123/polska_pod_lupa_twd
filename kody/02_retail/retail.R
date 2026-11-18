@@ -59,42 +59,40 @@ p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
   scale_fill_manual(values = c("Grudzień" = "#7A1E2B", "Pozostałe miesiące" = "#C5D0C0"),
                     breaks = c("Grudzień", "Pozostałe miesiące"),
                     name = NULL) +
-  scale_x_discrete(labels = c("I","II","III","IV","V","VI",
-                                "VII","VIII","IX","X","XI","XII", "")) +
-  geom_vline(data = data.frame(Activity.types = c("Książki, prasa i prezenty",
-                                                  "Meble, RTV, AGD",
-                                                  "Paliwa")),
+  scale_x_discrete(limits = c(month.name, "przerwa"),
+                   labels = c("I","","","IV","","","VII","","","X","","XII", "")) +
+  geom_vline(data = data.frame(Activity.types = factor(c("Żywność i napoje",
+                                                  "Książki, prasa i prezenty",
+                                                  "Meble, RTV, AGD"
+                                                  ))),
              aes(xintercept = 13),
              colour = "#B3A48D", linewidth = 0.4) +
   labs(title    = "Na co wydajemy więcej przed świętami?",
-         subtitle = "Zmiana sprzedaży względem poprzedniego miesiąca (słupek – mediana). Kreska – od wartości minimalnej do maksymalnej w okresie 2021–2025.",
+         subtitle = "Zmiana sprzedaży m/m (słupek – mediana, kreska – min–max), 2021–2025",
          x = "Miesiąc",
          y = "Zmiana sprzedaży, %",
          )+
     #caption = "Źródło: GUS, Bank Danych Lokalnych"      
-  theme_minimal()+
+  theme_minimal(base_size = 9)+
   theme(
     panel.grid.major.x = element_blank(),
     panel.grid.minor   = element_blank(),
-    plot.background  = element_rect(fill = KARTA, colour = NA),
-    panel.background = element_rect(fill = KARTA, colour = NA),
-    plot.subtitle = element_text(colour = "#A8323E"),
+    plot.background  = element_rect(fill = "transparent", colour = NA),
+    panel.background = element_rect(fill = "transparent", colour = NA),
     legend.position = "top",
     legend.justification = "left",
     panel.grid.major.y = element_line(colour = "#E6DDCB"),  
-    axis.text  = element_text(colour = "#5C4A3D"),          
     axis.title = element_text(colour = "#5C4A3D"),          
-    strip.text = element_text(colour = "#2E1F17"),
-    plot.title = element_text(family = "Helvetica", face = "bold",
-                              size = 34.2, colour = "#A8323E",
-                              hjust = 0, lineheight = 0.9,
-                              margin = margin(b = 6, unit = "pt")),
-    plot.title.position = "plot",
-    
+    plot.title    = element_text(family = "Helvetica", face = "bold",
+                                 size = 18, colour = "#A8323E",
+                                 hjust = 0, lineheight = 0.9,
+                                 margin = margin(b = 4, unit = "pt")),
+    plot.subtitle = element_text(colour = "#A8323E", size = 8),
+    strip.text    = element_text(colour = "#2E1F17", size = 9, face = "bold"),
+    axis.text     = element_text(colour = "#5C4A3D", size = 7)
     )
   
 ggsave("~/Desktop/wykres_zakupy.png", plot = p,
-       width = 44, height = 22, units = "cm", dpi = 300, bg = "transparent")
-
+       width = 18.76, height = 9.4, units = "cm", dpi = 300, bg = "transparent")
 podglad <- retail %>%
   pivot_wider(names_from = Year, values_from = Value)

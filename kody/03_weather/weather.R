@@ -82,7 +82,7 @@ ggplot() +
   geom_label(data = dekady,
              aes(x = (od + do) / 2, y = 100,
                  label = paste0("średnio ", round(srednia), "%")),
-             fill = KARTA, colour = ESPRESSO, size = 4.5, label.size = 0, vjust = -0.3)+
+             fill = NA, colour = ESPRESSO, size = 4.5, label.size = 0, vjust = -0.3)+
   labs(title    = "Czy święta są jeszcze białe?",
        subtitle =  "Odsetek stacji IMGW z pokrywą śnieżną (min. 1 cm) w noc wigilijną i noworoczną \n(pomiar rano 25.12 i 1.01). Kreska łączy oba dni tych samych świąt. Przerywana linia – średnia dla 10 lat.",
        x = "Rok (Wigilia danego roku i Nowy Rok następnego)",
@@ -91,8 +91,8 @@ ggplot() +
   #"Źródło: IMGW-PIB, dane synoptyczne dobowe. 
   theme_minimal()+
   theme(
-   plot.background  = element_rect(fill = KARTA, colour = NA),
-    panel.background = element_rect(fill = KARTA, colour = NA),
+    plot.background  = element_rect(fill = "transparent", colour = NA),
+    panel.background = element_rect(fill = "transparent", colour = NA),
     plot.title = element_text(family = "Helvetica", face = "bold",
                              size = 34.2, colour = "#A8323E",
                              hjust = 0, lineheight = 0.9,
@@ -114,7 +114,7 @@ ggplot() +
   
   
   
-ggsave("~/Desktop/pogoda.png", width = 12, height = 6, dpi = 300, bg = BG)  
+ggsave("~/Desktop/pogoda.png", width = 12, height = 6, dpi = 300, bg = "transparent")  
   
   
 
