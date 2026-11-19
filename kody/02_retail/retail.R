@@ -1,98 +1,127 @@
-
-### wczytanie danych
+# =============================================================================
+# Wykres: „Na co wydajemy więcej przed świętami?”
+# Zmiana sprzedaży detalicznej względem poprzedniego miesiąca, 2021–2025,
+# w czterech kategoriach towarów; grudzień wyróżniony kolorem.
+# Źródło: GUS, Bank Danych Lokalnych (indeksy sprzedaży, poprzedni miesiąc = 100)
+#https://bdl.stat.gov.pl/bdl/dane/podgrup/tablica
+# =============================================================================
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-KARTA <- "#F5EEE0"
+source("kody/paleta.R")
+
+
+# --- 1. Wczytanie danych -----------------------------------------------------
 
 retail <- read.csv("data/raw/retail_raw.csv",
                    sep = ";",
                    fileEncoding = "UTF-8")
 
-
-kategorie <- c("furniture, radio, TV and household appliances", 
+# cztery kategorie = cztery panele wykresu
+kategorie <- c("newspapers, books, other sale in specialized stores",
                "food, beverages and tobacco products",
-               "newspapers, books, other sale in specialized stores", 
+               "furniture, radio, TV and household appliances",
                "solid, liquid and gaseous fuels")
 
 
-# usuwamy 2020 i 2026 rok, wybieramy potrzebne kolumny, wybieramy 4 kategorii dla 4 podwykresow,
-# usuwamy schowane dane
-retail <- retail %>% filter(Year %in% c(2021:2025)) %>% 
-      select(Name, Months, Activity.types, Year, Value) %>%
-      filter(Activity.types %in% kategorie) %>%
-      filter(Value != 0)
+# --- 2. Przygotowanie danych -------------------------------------------------
 
-cala_polska <-retail %>% 
+# zostawiamy pełne lata 2021–2025 (bez 2020 i niepełnego 2026),
+# potrzebne kolumny i kategorie; Value = 0 to dane utajnione przez GUS
+retail <- retail %>%
+  filter(Year %in% 2021:2025) %>%
+  select(Name, Months, Activity.types, Year, Value) %>%
+  filter(Activity.types %in% kategorie) %>%
+  filter(Value != 0)
+
+# dane są dla 16 województw – dla każdego miesiąca bierzemy medianę województw
+cala_polska <- retail %>%
   group_by(Activity.types, Year, Months) %>%
-  summarise(Value = median(Value), .groups = "drop" )
-  
+  summarise(Value = median(Value), .groups = "drop")
+
+# dla każdego miesiąca: mediana z lat 2021–2025 oraz min i max (rozrzut między latami);
+# odejmujemy 100, żeby indeks zamienić na zmianę w %
 wynik <- cala_polska %>%
   group_by(Activity.types, Months) %>%
   summarise(mediana = median(Value) - 100,
-            min = min(Value) - 100,
-            max = max(Value) - 100,
+            min     = min(Value) - 100,
+            max     = max(Value) - 100,
             .groups = "drop")
-wynik <- wynik %>%
-  mutate(Months = factor(Months, levels = month.name))
 
+# polskie nazwy kategorii, kolejność paneli i miesięcy, wyróżnienie grudnia
 wynik <- wynik %>%
-  mutate(Activity.types = recode(Activity.types,
-                                 "food, beverages and tobacco products"                = "Żywność i napoje",
-                                 "newspapers, books, other sale in specialized stores" = "Książki, prasa i prezenty",
-                                 "furniture, radio, TV and household appliances"       = "Meble, RTV, AGD",
-                                 "solid, liquid and gaseous fuels"                     = "Paliwa"))
-wynik <- wynik %>%
-  mutate(wyroznienie = ifelse(Months == "December", "Grudzień", "Pozostałe miesiące"))
+  mutate(
+    Months = factor(Months, levels = month.name),
+    Activity.types = recode(Activity.types,
+      "newspapers, books, other sale in specialized stores" = "Książki, prasa i prezenty",
+      "food, beverages and tobacco products"                = "Żywność i napoje",
+      "furniture, radio, TV and household appliances"       = "Meble, RTV, AGD",
+      "solid, liquid and gaseous fuels"                     = "Paliwa"),
+    Activity.types = factor(Activity.types,
+      levels = c("Książki, prasa i prezenty", "Żywność i napoje",
+                 "Meble, RTV, AGD", "Paliwa")),
+    wyroznienie = ifelse(Months == "December", "Grudzień", "Pozostałe miesiące")
+  )
 
-wynik <- wynik %>%
-  mutate(Activity.types = factor(Activity.types,
-                                 levels = c("Książki, prasa i prezenty", "Żywność i napoje", "Meble, RTV, AGD", "Paliwa")))
+# pionowe rozdzielacze między kategoriami: w każdym panelu oprócz ostatniego,
+# na pustym 13. „miesiącu” (factor z tymi samymi poziomami – inaczej panele
+# ułożą się alfabetycznie)
+rozdzielacze <- data.frame(
+  Activity.types = factor(head(levels(wynik$Activity.types), -1),
+                          levels = levels(wynik$Activity.types))
+)
+
+
+# --- 3. Wykres ---------------------------------------------------------------
 
 p <- ggplot(wynik, aes(x = Months, y = mediana, fill = wyroznienie)) +
+  # słupki – mediana zmian, kreski – rozrzut między latami
   geom_col(width = 0.7) +
+  geom_linerange(aes(ymin = min, ymax = max), colour = CYNAMON, linewidth = 0.4) +
+  geom_hline(yintercept = 0, colour = ZERO) +
+  geom_vline(data = rozdzielacze, aes(xintercept = 13),
+             colour = LINIA, linewidth = 0.4) +
   facet_wrap(~ Activity.types, nrow = 1) +
-  geom_linerange(aes(ymin = min, ymax = max), colour = "#5C4A3D", linewidth = 0.4)+
-  geom_hline(yintercept = 0, colour = "grey30") +
-  scale_fill_manual(values = c("Grudzień" = "#7A1E2B", "Pozostałe miesiące" = "#C5D0C0"),
+
+  # skale
+  scale_fill_manual(values = c("Grudzień" = WIGILIA, "Pozostałe miesiące" = INNE),
                     breaks = c("Grudzień", "Pozostałe miesiące"),
                     name = NULL) +
-  scale_x_discrete(limits = c(month.name, "przerwa"),
-                   labels = c("I","","","IV","","","VII","","","X","","XII", "")) +
-  geom_vline(data = data.frame(Activity.types = factor(c("Żywność i napoje",
-                                                  "Książki, prasa i prezenty",
-                                                  "Meble, RTV, AGD"
-                                                  ))),
-             aes(xintercept = 13),
-             colour = "#B3A48D", linewidth = 0.4) +
+  scale_x_discrete(limits = c(month.name, "przerwa"),   # 13. pusty „miesiąc” na rozdzielacz
+                   labels = c("I", "", "", "IV", "", "", "VII", "", "", "X", "", "XII", "")) +
+
+  # opisy
   labs(title    = "Na co wydajemy więcej przed świętami?",
-         subtitle = "Zmiana sprzedaży m/m (słupek – mediana, kreska – min–max), 2021–2025",
-         x = "Miesiąc",
-         y = "Zmiana sprzedaży, %",
-         )+
-    #caption = "Źródło: GUS, Bank Danych Lokalnych"      
-  theme_minimal(base_size = 9)+
+       subtitle = "Zmiana sprzedaży względem poprzedniego miesiąca (słupek – mediana, kreska – min–max), 2021–2025",
+       x = "Miesiąc",
+       y = "Zmiana sprzedaży, %") +
+
+  # wygląd (rozmiary dobrane do miejsca na plakacie: 18,76 × 9,4 cm)
+  theme_minimal(base_size = 9) +
   theme(
+    plot.background    = element_rect(fill = "transparent", colour = NA),
+    panel.background   = element_rect(fill = "transparent", colour = NA),
     panel.grid.major.x = element_blank(),
     panel.grid.minor   = element_blank(),
-    plot.background  = element_rect(fill = "transparent", colour = NA),
-    panel.background = element_rect(fill = "transparent", colour = NA),
-    legend.position = "top",
-    legend.justification = "left",
-    panel.grid.major.y = element_line(colour = "#E6DDCB"),  
-    axis.title = element_text(colour = "#5C4A3D"),          
+    panel.grid.major.y = element_line(colour = SIATKA),
+
     plot.title    = element_text(family = "Helvetica", face = "bold",
-                                 size = 18, colour = "#A8323E",
+                                 size = 18, colour = CZERWON,
                                  hjust = 0, lineheight = 0.9,
                                  margin = margin(b = 4, unit = "pt")),
-    plot.subtitle = element_text(colour = "#A8323E", size = 8),
-    strip.text    = element_text(colour = "#2E1F17", size = 9, face = "bold"),
-    axis.text     = element_text(colour = "#5C4A3D", size = 7)
-    )
-  
-ggsave("~/Desktop/wykres_zakupy.png", plot = p,
+    plot.subtitle = element_text(colour = CZERWON, size = 8),
+    strip.text    = element_text(colour = ESPRESSO, size = 9, face = "bold"),
+    axis.text     = element_text(colour = CYNAMON, size = 7),
+    axis.title    = element_text(colour = CYNAMON),
+
+    legend.position      = "top",
+    legend.justification = "left"
+  )
+
+
+# --- 4. Zapis ----------------------------------------------------------------
+
+ggsave("~/Desktop/wykres_zakupy_p.png", plot = p,
        width = 18.76, height = 9.4, units = "cm", dpi = 300, bg = "transparent")
-podglad <- retail %>%
-  pivot_wider(names_from = Year, values_from = Value)
