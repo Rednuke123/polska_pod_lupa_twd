@@ -71,7 +71,7 @@ p <- ggplot() +
   geom_text(data = dekady,
             aes(x = (od + do) / 2, y = 100,
                 label = paste0("średnio ", round(srednia), "%")),
-            colour = ESPRESSO, size = 4.5, vjust = -0.6) +
+            colour = ESPRESSO, size = 4.5, fontface = "bold", vjust = -0.6) +
 
   # gantelki: kreska łączy Wigilię i Nowy Rok tego samego sezonu
   geom_segment(data = gantele,
